@@ -1,12 +1,12 @@
 # EBS Autoscale
 
-**ebs-autoscale** maintains a filesystem across one or more ebs volumes. As the filesystem fills up, ebs-autoscale will detect the change and recruit additional ebs volumes to the filesystem.
+**ebs-autoscale** maintains a filesystem across one or more ebs volumes. As the filesystem fills up, ebs-autoscale will detect the change in useage and recruit additional ebs volumes to the filesystem.
 
 This project is inspired by: https://github.com/awslabs/amazon-ebs-autoscale
 
 ## Dependencies
 
-**ebs-autoscale** creates files systems across ebs volumes. As there are no dedicated Go libraries to do this ebs-autoscale shells out to external processes.
+**ebs-autoscale** creates files systems across ebs volumes. As there are no dedicated Go libraries to do this, ebs-autoscale must shell-out to external processes.
 
 Currently, ebs-autoscale creates a **btrfs** file system across the target devices.
 
@@ -20,9 +20,9 @@ Future releases may support other file systems.
 
 ## Installation
 
-**ebs-autoscale** distributes as a command line binary.
+**ebs-autoscale** distributes as a command-line binary.
 
-It is installed in three steps:
+The utility is installed in three steps:
 
 1) **config.json** - a configuration jason must be created and made readable. By default, ebs-autoscale looks for `/etc/ebs-autoscale/ebs-autoscale.json`.
 2) **initialisation** - the initial device and mount point need to be created. This process must be run with root privileges.
@@ -62,7 +62,7 @@ The following is an example of the configuration json:
 
 ### Initialisation
 
-The following command, recruits the first volume and initialises the file system:
+The following command recruits the first volume and initialises the file system:
 
 ```bash
 sudo ebs-autoscale init --config /path/to/config.json
@@ -70,7 +70,7 @@ sudo ebs-autoscale init --config /path/to/config.json
 
 ### Monitor
 
-The following command, monitors the filesystem and grows it when it's usage reaches the threshold defined in the config.json.
+The following command monitors the configured filesystem and grows it when it's usage reaches the threshold defined in the config.json.
 This is the command called by the systemd monitor-service module:
 
 ```bash
@@ -85,7 +85,7 @@ By performing the init outside the service, you can use the resulting volume imm
 
 Once initialised, the monitoring service will expand the volume when its configured usage threshold has been exceeded.
 
-If initialising the service by hand use the service defaults located within this repository.
+If initialising the service by hand, use the service defaults located within this repository.
 
 #### For systemd:
 ```bash
@@ -112,16 +112,16 @@ sudo systemctl start ebs-autoscale-monitor.service
 
 ## AWS IAM Role Permissions
 
-The ec2 instance will require the following permissions to allow ebs-autoscale to function correctly.
+The ec2 instance will require the following permissions to allow ebs-autoscale to function correctly:
 
 `allowInstanceOperations` is required to read the tags from the local instance.
 It is recommended to limit which instance tags can be read by identifying the instance(s).
 See the `Condition` block for an example.
 Limits the ability to attach volumes with a specific tag. ebs-autoscale will copy tags from the instance to the volumes on creation.
 
-`enableCloudwatchLoggingPutEvents` allows the tools to push cloudwatch logs to a log group. Replace `<log group arn>` with your log group.
+`enableCloudwatchLoggingPutEvents` allows the utility to push cloudwatch logs to a log group. Replace `<log group arn>` with your log group.
 
-`enableCreationOfCloudwatchStreams` allows the tool to create cloudwatch log streams. Replace `<log group arn>` with your log group.
+`enableCreationOfCloudwatchStreams` allows the utility to create cloudwatch log streams. Replace `<log group arn>` with your log group.
 
 `allowVolumeOperations` is required to create volumes.
 
