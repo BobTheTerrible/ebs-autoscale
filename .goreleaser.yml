@@ -1,13 +1,11 @@
 project_name: ebs-autoscale
-gitlab_urls:
-  api: '{{ .Env.CI_API_V4_URL }}'
-  download: '{{ .Env.CI_SERVER_URL }}'
-  use_package_registry: true
-  use_job_token: true
+
 release:
-  gitlab:
-    name: '{{ .Env.CI_PROJECT_ID }}'
+  github:
+    owner: BobTheTerrible
+    name: ebs-autoscale
   mode: append
+
 builds:
   - env: [CGO_ENABLED=0]
     goos:
@@ -15,9 +13,10 @@ builds:
     goarch:
       - amd64
       - arm64
+
 nfpms:
-  - maintainer: Jon Hinton
-    description: Manages an auto-scaling ebs volume array
+  - maintainer: BobTheTerrible
+    description: Manages an auto-scaling EBS volume array
     homepage: https://github.com/jhinton/ebs-autoscale
     formats:
       - deb
@@ -28,7 +27,6 @@ nfpms:
         dst: /usr/lib/systemd/system/ebs-autoscale-monitor.service
       - src: service/ebs-autoscale.json
         dst: /etc/ebs-autoscale/ebs-autoscale.json
-
     overrides:
       rpm:
         dependencies:
@@ -39,4 +37,3 @@ nfpms:
     scripts:
       postinstall: service/systemd/install.sh
       postremove: service/systemd/uninstall.sh
-
