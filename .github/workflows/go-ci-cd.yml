@@ -42,9 +42,9 @@ jobs:
         id: linter_version
         run: |
           case "${{ needs.extract-go-version.outputs.go_version }}" in
-            "1.20") LINTER_VERSION="v1.52.2" ;;
-            "1.21") LINTER_VERSION="v1.54.2" ;;
-            "1.22") LINTER_VERSION="v1.55.2" ;;
+            "1.20") LINTER_VERSION="v1.52" ;;
+            "1.21") LINTER_VERSION="v1.54" ;;
+            "1.22") LINTER_VERSION="v1.55" ;;
             *) echo "Unsupported Go version: ${{ needs.extract-go-version.outputs.go_version }}"; exit 1 ;;
           esac
           echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV
