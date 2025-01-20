@@ -54,7 +54,7 @@ The following is an example of the configuration json:
     "initial-size-gb": 50,          ## The size in GB of the first ebs volume
     "max-size-gb": 500,             ## The maximum, combined size in GB of the filesystem
     "ebs-max-attached-volumes": 16, ## The maximum number of allowed volumes for the instance. This should reflect the maximum allowed number of volumes defined by AWS. Currently defaults to 16
-    "ebs-max-created-volumes": 5    ## The maximum number of volumes to recruit for this filesystem. An error will be thrown if this is exceeded
+    "ebs-max-created-volumes": 5    ## The maximum number of volumes to recruit for this filesystem.
   }
 }
 ```
@@ -75,6 +75,11 @@ This is the command called by the systemd monitor-service module:
 ```bash
 sudo ebs-autoscale monitor-service --config /path/to/config.json
 ```
+
+#### Volume Grow Events
+
+Volume grow events are triggered when the useage of the monitored volume exceeds `monitor.threshold-pc`.
+The size of the recruited volume is caclulated from `filesystem.max-size-gb` divided by `filesystem.ebs-max-created-volumes` (less the initial volume size and count). This way the size of each additional volume can fine tuned.
 
 ### Monitoring as a Service
 

@@ -149,18 +149,13 @@ func (v *Volume) GrowVolume(ctx context.Context) error {
 		return err
 	}
 
-	// Grow the volume by the calculated size increase
-	err := v.createAndAttachEbsVolume(ctx, sizeIncreasePerVolume)
+	// Attach a new ebs volume by the calculated size increase
+	device, err := v.createAndAttachEbsVolume(ctx, sizeIncreasePerVolume)
 	if err != nil {
 		return err
 	}
 
-	// After growing, expand the filesystem
-	device, err := v.getNextLogicalDevice()
-	if err != nil {
-		return err
-	}
-
+	// After attaching, expand the filesystem across the new device
 	err = v.Fs.GrowFileSystem(*device)
 	if err != nil {
 		return err

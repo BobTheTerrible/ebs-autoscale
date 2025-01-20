@@ -45,6 +45,7 @@ jobs:
             "1.20") LINTER_VERSION="v1.52" ;;
             "1.21") LINTER_VERSION="v1.54" ;;
             "1.22") LINTER_VERSION="v1.55" ;;
+            "1.23") LINTER_VERSION="v1.61" ;;
             *) echo "Unsupported Go version: ${{ needs.extract-go-version.outputs.go_version }}"; exit 1 ;;
           esac
           echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV

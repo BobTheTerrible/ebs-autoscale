@@ -1,8 +1,7 @@
 {
   "monitor": {
     "interval": 5,
-    "threshold-pc": 50,
-    "grow-gb": 100
+    "threshold-pc": 50
   },
   "filesystem": {
     "path": "/mnt/ebs-autoscale",

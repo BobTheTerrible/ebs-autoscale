@@ -55,7 +55,7 @@ func (m MonitorVolume) assessAndGrow(ctx context.Context) error {
 	}
 
 	if usage >= m.PercentageFull {
-		slog.Info(fmt.Sprintf("assessAndGrow: usage threshold (%f) exceeded (%f), growing: %s by: %d", m.PercentageFull, usage, m.Volume.Fs.GetMountPoint()))
+		slog.Info(fmt.Sprintf("assessAndGrow: usage threshold (%f) exceeded (%f), growing: %s", m.PercentageFull, usage, m.Volume.Fs.GetMountPoint()))
 
 		err = m.Volume.GrowVolume(ctx)
 		if err != nil {
