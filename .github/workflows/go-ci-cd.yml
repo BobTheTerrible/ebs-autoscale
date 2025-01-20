@@ -50,10 +50,11 @@ jobs:
           echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV
           echo "::set-output name=linter_version::$LINTER_VERSION"
 
-      - name: Install golangci-lint
-        run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.LINTER_VERSION }}
-          golangci-lint run ./ebs_autoscale/ --timeout 5m
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: ${{ env.LINTER_VERSION }}
+          args: --timeout 5m ./ebs_autoscale/
 
   test:
     runs-on: ubuntu-latest
