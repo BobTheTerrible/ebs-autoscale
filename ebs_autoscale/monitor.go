@@ -17,7 +17,7 @@ func NewMonitor(volume Volume, pollIntervalSec int32, percentageFull float32) *M
 	return &MonitorVolume{
 		Volume:          volume,
 		PollIntervalSec: pollIntervalSec,
-		PercentageFull:  percentageFull
+		PercentageFull:  percentageFull,
 	}
 }
 
