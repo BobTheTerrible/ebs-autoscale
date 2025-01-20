@@ -38,9 +38,21 @@ jobs:
         with:
           go-version: ${{ needs.extract-go-version.outputs.go_version }}
 
-      - name: Run golangci-lint
+      - name: Determine golangci-lint version
+        id: linter_version
         run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          case "${{ needs.extract-go-version.outputs.go_version }}" in
+            "1.20") LINTER_VERSION="v1.52.2" ;;
+            "1.21") LINTER_VERSION="v1.54.2" ;;
+            "1.22") LINTER_VERSION="v1.55.2" ;;
+            *) echo "Unsupported Go version: ${{ needs.extract-go-version.outputs.go_version }}"; exit 1 ;;
+          esac
+          echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV
+          echo "::set-output name=linter_version::$LINTER_VERSION"
+
+      - name: Install golangci-lint
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.LINTER_VERSION }}
           golangci-lint run ./ebs_autoscale/ --timeout 5m
 
   test:
