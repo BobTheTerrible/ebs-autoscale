@@ -45,7 +45,6 @@ The following is an example of the configuration json:
   "monitor": {
     "interval": 5,      ## The polling interval in seconds
     "threshold-pc": 50, ## The percentage usage threshold triggering volume grow event
-    "grow-gb": 50       ## The size in GB to increase the files system on each grow event
   },
   "filesystem": {
     "path": "/mnt/ebs-autoscale",   ## The file system mount path

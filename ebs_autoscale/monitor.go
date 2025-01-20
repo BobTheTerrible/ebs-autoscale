@@ -11,15 +11,13 @@ type MonitorVolume struct {
 	Volume          Volume
 	PollIntervalSec int32
 	PercentageFull  float32
-	GrowByGB        int32
 }
 
-func NewMonitor(volume Volume, pollIntervalSec int32, percentageFull float32, growByGB int32) *MonitorVolume {
+func NewMonitor(volume Volume, pollIntervalSec int32, percentageFull float32) *MonitorVolume {
 	return &MonitorVolume{
 		Volume:          volume,
 		PollIntervalSec: pollIntervalSec,
-		PercentageFull:  percentageFull,
-		GrowByGB:        growByGB,
+		PercentageFull:  percentageFull
 	}
 }
 
@@ -57,9 +55,9 @@ func (m MonitorVolume) assessAndGrow(ctx context.Context) error {
 	}
 
 	if usage >= m.PercentageFull {
-		slog.Info(fmt.Sprintf("assessAndGrow: usage threshold (%f) exceeded (%f), growing: %s by: %d", m.PercentageFull, usage, m.Volume.Fs.GetMountPoint(), m.GrowByGB))
+		slog.Info(fmt.Sprintf("assessAndGrow: usage threshold (%f) exceeded (%f), growing: %s by: %d", m.PercentageFull, usage, m.Volume.Fs.GetMountPoint()))
 
-		err = m.Volume.GrowVolume(ctx, m.GrowByGB)
+		err = m.Volume.GrowVolume(ctx)
 		if err != nil {
 			return err
 		}

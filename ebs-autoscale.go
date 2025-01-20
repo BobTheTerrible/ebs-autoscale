@@ -84,7 +84,7 @@ func createVolume(ctx context.Context, args []string) *ebs_autoscale.Volume {
 
 	slog.Info(fmt.Sprintf("createVolume: Creating New volume: %s", config.Volume.MountPoint))
 
-	err = volume.CreateVolume(ctx, config.Volume.InitialSizeGb)
+	err = volume.CreateVolume(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -96,7 +96,6 @@ func growVolume(ctx context.Context, args []string) *ebs_autoscale.Volume {
 
 	cmd := flag.NewFlagSet("grow", flag.ExitOnError)
 	configPath := cmd.String("config", defaultConfigPath, "Path to a json config file")
-	grow := cmd.Int64("grow-gb", -1, "GrowGb the device by grow GB")
 
 	err := cmd.Parse(args)
 	if err != nil {
@@ -108,10 +107,9 @@ func growVolume(ctx context.Context, args []string) *ebs_autoscale.Volume {
 		log.Fatalln(err)
 	}
 
-	slog.Info(fmt.Sprintf("growVolume: Growing volume: %d", grow))
+	slog.Info(fmt.Sprintf("growVolume: Growing volume"))
 
-	// TODO bad Casting.... shoud be fine tho...
-	err = volume.GrowVolume(ctx, int32(*grow))
+	err = volume.GrowVolume(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
