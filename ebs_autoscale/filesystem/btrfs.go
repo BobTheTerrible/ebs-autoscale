@@ -9,6 +9,14 @@ import (
 	"os/exec"
 )
 
+func init() {
+	RegisterBackend("btrfs", func(mountPoint string, options map[string]interface{}) (FileSystem, error) {
+		return &BtrfsFileSystem{
+			MountPoint: mountPoint,
+		}, nil
+	})
+}
+
 // BtrfsFileSystem implements the FileSystem interface
 type BtrfsFileSystem struct {
 	MountPoint string
