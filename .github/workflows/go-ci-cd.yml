@@ -38,20 +38,34 @@ jobs:
         with:
           go-version: ${{ needs.extract-go-version.outputs.go_version }}
 
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download Go modules
+        run: go mod download
+
       - name: Determine golangci-lint version
         id: linter_version
         run: |
           case "${{ needs.extract-go-version.outputs.go_version }}" in
             "1.20") LINTER_VERSION="v1.52" ;;
-            "1.21") LINTER_VERSION="v1.54" ;;
-            "1.22") LINTER_VERSION="v1.55" ;;
+            "1.21") LINTER_VERSION="v1.54.2" ;;  # Use the latest patch version
+            "1.22") LINTER_VERSION="v1.55.2" ;;
             *) echo "Unsupported Go version: ${{ needs.extract-go-version.outputs.go_version }}"; exit 1 ;;
           esac
           echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV
           echo "::set-output name=linter_version::$LINTER_VERSION"
 
+      - name: Verify Go Version
+        run: go version
+
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6.3.0
         with:
           version: ${{ env.LINTER_VERSION }}
           args: --timeout 5m ./ebs_autoscale/
