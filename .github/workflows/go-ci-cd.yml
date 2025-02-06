@@ -91,7 +91,7 @@ jobs:
           go test -v ./ebs_autoscale/... | go-junit-report > result.xml
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: result.xml
