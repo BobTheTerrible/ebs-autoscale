@@ -69,6 +69,8 @@ jobs:
         with:
           version: ${{ env.LINTER_VERSION }}
           args: --timeout 5m ./ebs_autoscale/
+        env:
+          GOFLAGS: "-mod=readonly"
 
   test:
     runs-on: ubuntu-latest
