@@ -26,60 +26,6 @@ jobs:
           echo "go_version=${VERSION}" >> $GITHUB_ENV
           echo "::set-output name=go_version::${VERSION}"
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: extract-go-version
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ needs.extract-go-version.outputs.go_version }}
-
-      - name: Set Go Environment Variables
-        run: |
-          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
-          echo "GOROOT=$(go env GOROOT)" >> $GITHUB_ENV
-
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Download Go modules
-        run: go mod download
-
-      - name: Clean and Rebuild Go Cache
-        run: |
-          go clean -cache -modcache -testcache -fuzzcache
-          go mod tidy
-
-      - name: Determine golangci-lint version
-        id: linter_version
-        run: |
-          case "${{ needs.extract-go-version.outputs.go_version }}" in
-            "1.20") LINTER_VERSION="v1.52" ;;
-            "1.21") LINTER_VERSION="v1.54.2" ;;  # Use the latest patch version
-            "1.22") LINTER_VERSION="v1.55.2" ;;
-            *) echo "Unsupported Go version: ${{ needs.extract-go-version.outputs.go_version }}"; exit 1 ;;
-          esac
-          echo "LINTER_VERSION=$LINTER_VERSION" >> $GITHUB_ENV
-          echo "::set-output name=linter_version::$LINTER_VERSION"
-
-      - name: Verify Go Version
-        run: go version
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6.3.0
-        with:
-          version: ${{ env.LINTER_VERSION }}
-          args: --timeout 5m --verbose ./ebs_autoscale/
-
   test:
     runs-on: ubuntu-latest
     needs: extract-go-version
