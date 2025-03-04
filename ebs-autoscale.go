@@ -160,9 +160,9 @@ func base(ctx context.Context, configPath string) (*ebs_autoscale.Config, *ebs_a
 		return nil, nil, err
 	}
 
-	// at some point we will want to configure with different file systems
-	fs := filesystem.BtrfsFileSystem{
-		MountPoint: config.Volume.MountPoint,
+	fs, err := filesystem.GetFileSystem(config.Volume.Backend.Type, config.Volume.MountPoint, config.Volume.Backend.FsSpecific)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	volume, err := ebs_autoscale.NewVolume(

@@ -55,9 +55,20 @@ The following is an example of the configuration json:
     "max-size-gb": 500,             ## The maximum, combined size in GB of the filesystem
     "ebs-max-attached-volumes": 16, ## The maximum number of allowed volumes for the instance. This should reflect the maximum allowed number of volumes defined by AWS. Currently defaults to 16
     "ebs-max-created-volumes": 5    ## The maximum number of volumes to recruit for this filesystem.
+    "backend": {                    ## Filesystem backend config
+      "type": "btrfs",              ## The underlying filesystem
+      "fs-specific": {}             ## Underlying filesytem specific config - see below
+    }
   }
 }
 ```
+
+#### Backends
+
+##### Btrfs
+
+type: btrfs
+fs-specific: {}
 
 ### Initialisation
 
@@ -161,7 +172,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
       "ec2:DescribeTags",
       "ec2:ModifyInstanceAttribute"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:instance/*",
       "arn:aws:ec2:*:*:volume/*"
     ],
@@ -177,7 +188,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
       "ec2:DescribeVolumes",
       "ec2:DescribeVolumeAttribute"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:volume/*"
     ]
   },
@@ -187,7 +198,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
     "Action": [
       "ec2:CreateTags"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:volume/*"
     ],
     "Condition": {

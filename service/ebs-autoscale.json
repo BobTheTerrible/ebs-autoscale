@@ -10,6 +10,10 @@
     "initial-size-gb": 50,
     "max-size-gb": 1000,
     "ebs-max-attached-volumes": 16,
-    "ebs-max-created-volumes": 8
+    "ebs-max-created-volumes": 8,
+    "backend": {
+      "type": "btrfs",
+      "fs-specific": {}
+    }
   }
 }
