@@ -55,10 +55,21 @@ The following is an example of the configuration json:
     "initial-size-gb": 50,          ## The size in GB of the first ebs volume
     "max-size-gb": 500,             ## The maximum, combined size in GB of the filesystem
     "ebs-max-attached-volumes": 16, ## The maximum number of allowed volumes for the instance. This should reflect the maximum allowed number of volumes defined by AWS. Currently defaults to 16
-    "ebs-max-created-volumes": 5    ## The maximum number of volumes to recruit for this filesystem. An error will be thrown if this is exceeded
+    "ebs-max-created-volumes": 5,   ## The maximum number of volumes to recruit for this filesystem. An error will be thrown if this is exceeded
+    "backend": {                    ## Filesystem backend config
+      "type": "btrfs",              ## The underlying filesystem
+      "fs-specific": {}             ## Underlying filesytem specific config - see below
+    }
   }
 }
 ```
+
+#### Backends
+
+##### Btrfs
+
+type: btrfs
+fs-specific: {}
 
 ### Initialisation
 
