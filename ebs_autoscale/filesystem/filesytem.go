@@ -11,7 +11,8 @@ type FileSystem interface {
 	Stat() (uint64, uint64, uint64, error)
 }
 
-var backends = map[string]func(mountPoint string) FileSystem{}
+var backends = map[string]func(mountPoint string, options map[string]interface{}) (FileSystem, error){}
+
 
 // RegisterBackend allows adding a new filesystem type to the registry
 func RegisterBackend(name string, fsConstructor func(mountPoint string, options map[string]interface{}) (FileSystem, error)) {
