@@ -277,3 +277,61 @@ func TestBuildVolumeTags(t *testing.T) {
 	}
 
 }
+
+type TestCalculateSizeIncreasePerVolumeInputs struct {
+	Name     string
+	Volume   Volume
+	Expected int32
+	Error    bool
+}
+
+func TestCalculateSizeIncreasePerVolume(t *testing.T) {
+
+	tests := []TestCalculateSizeIncreasePerVolumeInputs{
+		{
+			Name: "Valid size increase per volume",
+			Volume: func(volume Volume) Volume {
+				volume.InitialSizeGb = 50
+				volume.MaxLogicalSizeGb = 200
+				volume.MaxCreatedVolumes = 3
+				return volume
+			}(defaultVolume),
+			Expected: 75, // (200 - 50) / (3 - 1) = 75
+			Error:    false,
+		},
+		{
+			Name: "Max size already reached",
+			Volume: func(volume Volume) Volume {
+				volume.InitialSizeGb = 200
+				volume.MaxLogicalSizeGb = 200
+				volume.MaxCreatedVolumes = 3
+				return volume
+			}(defaultVolume),
+			Expected: 0,
+			Error:    true, // Error expected because the difference is <= 0
+		},
+		{
+			Name: "Only one volume created",
+			Volume: func(volume Volume) Volume {
+				volume.InitialSizeGb = 50
+				volume.MaxLogicalSizeGb = 200
+				volume.MaxCreatedVolumes = 1
+				return volume
+			}(defaultVolume),
+			Expected: 0,
+			Error:    true, // Error expected because we can't create any new volumes
+		},
+	}
+
+	for _, i := range tests {
+
+		got, err := i.Volume.calculateSizeIncreasePerVolume()
+
+		if (err == nil) == i.Error {
+			t.Errorf("calculateSizeIncreasePerVolume(%s) Returned an unexpected error: %s", i.Name, err)
+		}
+		if got != i.Expected {
+			t.Errorf("calculateSizeIncreasePerVolume(%s) Expected: %d Got: %d", i.Name, i.Expected, got)
+		}
+	}
+}

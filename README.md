@@ -45,7 +45,6 @@ The following is an example of the configuration json:
   "monitor": {
     "interval": 5,      ## The polling interval in seconds
     "threshold-pc": 50, ## The percentage usage threshold triggering volume grow event
-    "grow-gb": 50       ## The size in GB to increase the files system on each grow event
   },
   "filesystem": {
     "path": "/mnt/ebs-autoscale",   ## The file system mount path
@@ -55,7 +54,7 @@ The following is an example of the configuration json:
     "initial-size-gb": 50,          ## The size in GB of the first ebs volume
     "max-size-gb": 500,             ## The maximum, combined size in GB of the filesystem
     "ebs-max-attached-volumes": 16, ## The maximum number of allowed volumes for the instance. This should reflect the maximum allowed number of volumes defined by AWS. Currently defaults to 16
-    "ebs-max-created-volumes": 5,   ## The maximum number of volumes to recruit for this filesystem. An error will be thrown if this is exceeded
+    "ebs-max-created-volumes": 5    ## The maximum number of volumes to recruit for this filesystem.
     "backend": {                    ## Filesystem backend config
       "type": "btrfs",              ## The underlying filesystem
       "fs-specific": {}             ## Underlying filesytem specific config - see below
@@ -87,6 +86,11 @@ This is the command called by the systemd monitor-service module:
 ```bash
 sudo ebs-autoscale monitor-service --config /path/to/config.json
 ```
+
+#### Volume Grow Events
+
+Volume grow events are triggered when the useage of the monitored volume exceeds `monitor.threshold-pc`.
+The size of the recruited volume is caclulated from `filesystem.max-size-gb` divided by `filesystem.ebs-max-created-volumes` (less the initial volume size and count). This way the size of each additional volume can fine tuned.
 
 ### Monitoring as a Service
 
@@ -168,7 +172,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
       "ec2:DescribeTags",
       "ec2:ModifyInstanceAttribute"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:instance/*",
       "arn:aws:ec2:*:*:volume/*"
     ],
@@ -184,7 +188,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
       "ec2:DescribeVolumes",
       "ec2:DescribeVolumeAttribute"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:volume/*"
     ]
   },
@@ -194,7 +198,7 @@ Limits the ability to attach volumes with a specific tag. ebs-autoscale will cop
     "Action": [
       "ec2:CreateTags"
     ],
-    "Resource ": [
+    "Resource": [
       "arn:aws:ec2:*:*:volume/*"
     ],
     "Condition": {
