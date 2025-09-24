@@ -128,7 +128,7 @@ func (v Volume) TotalUsagePercent() (float32, error) {
 
 // CreateVolume creates the volume and filesystem for the given configuration
 func (v *Volume) CreateVolume(ctx context.Context) error {
-	
+
 	device, err := v.createAndAttachEbsVolume(ctx, v.InitialSizeGb)
 	if err != nil {
 		return err
