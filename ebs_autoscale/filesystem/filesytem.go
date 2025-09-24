@@ -24,7 +24,7 @@ func RegisterBackend(name string, fsConstructor func(mountPoint string, options 
 // GetFileSystem returns the configured filesystem backend
 func GetFileSystem(fsType string, mountPoint string, options map[string]interface{}) (FileSystem, error) {
 	if constructor, exists := backends[fsType]; exists {
-        return constructor(mountPoint, options)
+		return constructor(mountPoint, options)
 	}
 	return nil, fmt.Errorf("unsupported filesystem type: %s", fsType)
 }
