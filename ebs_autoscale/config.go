@@ -17,7 +17,11 @@ type LoggingCfg struct {
 type MonitorCfg struct {
 	Interval    int32   `yaml:"interval" envconfig:"EBS_AUTO_MONITOR_INTERVAL" default:"3"`
 	ThresholdPc float32 `yaml:"threshold-pc" envconfig:"EBS_AUTO_MONITOR_THRESHOLD_PC" default:"50"`
-	GrowGb      int32   `yaml:"grow-gb" envconfig:"EBS_AUTO_MONITOR_GROW" default:"100"`
+}
+
+type BackendCfg struct {
+	Type       string                 `yaml:"type" envconfig:"EBS_AUTO_FILESYSTEM_TYPE"`
+	FsSpecific map[string]interface{} `yaml:"fs-specific" envconfig:"EBS_AUTO_FILESYSTEM_FS_SPECIFIC"`
 }
 
 type BackendCfg struct {

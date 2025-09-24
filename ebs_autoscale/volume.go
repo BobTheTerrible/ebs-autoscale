@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/jhinton/ebs-autoscale/ebs_autoscale/filesystem"
+	"math"
 	"os"
 	"strings"
 	"time"
@@ -21,6 +22,7 @@ type Volume struct {
 	EbsType            string
 	ThroughPut         *int32
 	Iops               *int32
+	InitialSizeGb      int32
 	MaxLogicalSizeGb   int32
 	MaxAttachedVolumes int32
 	MaxCreatedVolumes  int32
@@ -86,6 +88,7 @@ func NewVolume(ctx context.Context, host Ec2Host, fs filesystem.FileSystem, cfg 
 		EbsType:            cfg.EbsType,
 		ThroughPut:         cfg.EbsThroughput,
 		Iops:               cfg.EbsIops,
+		InitialSizeGb:      cfg.InitialSizeGb,  // Set initial size from config
 		MaxLogicalSizeGb:   cfg.MaxSizeGb,
 		MaxAttachedVolumes: cfg.EbsMaxAttachedVolumes,
 		MaxCreatedVolumes:  cfg.EbsMaxCreatedVolumes,
@@ -124,9 +127,9 @@ func (v Volume) TotalUsagePercent() (float32, error) {
 }
 
 // CreateVolume creates the volume and filesystem for the given configuration
-func (v *Volume) CreateVolume(ctx context.Context, size int32) error {
+func (v *Volume) CreateVolume(ctx context.Context) error {
 
-	device, err := v.createAndAttachEbsVolume(ctx, size)
+	device, err := v.createAndAttachEbsVolume(ctx, v.InitialSizeGb)
 	if err != nil {
 		return err
 	}
@@ -139,19 +142,39 @@ func (v *Volume) CreateVolume(ctx context.Context, size int32) error {
 }
 
 // GrowVolume grows the volume by the given amount
-func (v *Volume) GrowVolume(ctx context.Context, sizeGb int32) error {
-
-	device, err := v.createAndAttachEbsVolume(ctx, sizeGb)
+func (v *Volume) GrowVolume(ctx context.Context) error {
+	// Calculate the total available size to grow
+	sizeIncreasePerVolume, err := v.calculateSizeIncreasePerVolume()
 	if err != nil {
 		return err
 	}
 
+	// Attach a new ebs volume by the calculated size increase
+	device, err := v.createAndAttachEbsVolume(ctx, sizeIncreasePerVolume)
+	if err != nil {
+		return err
+	}
+
+	// After attaching, expand the filesystem across the new device
 	err = v.Fs.GrowFileSystem(*device)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// calculateSizeIncreasePerVolume calculates the increase in size per volume, taking into account the max size and the initial volume.
+func (v *Volume) calculateSizeIncreasePerVolume() (int32, error) {
+	difference := v.MaxLogicalSizeGb - v.InitialSizeGb
+	if difference <= 0 {
+		return 0, fmt.Errorf("calculateSizeIncreasePerVolume: Cannot grow, the volume size is already at or beyond max size")
+	}
+
+	// Calculate the size increase per volume, rounding down to the nearest GB
+	// Subtract 1 from MaxCreatedVolumes to account for the initial volume already created
+	sizeIncreasePerVolume := int32(math.Floor(float64(difference) / float64(v.MaxCreatedVolumes-1)))
+	return sizeIncreasePerVolume, nil
 }
 
 // getNextLogicalDevice attempts to determine the next Dev name for a given range of values i.e. /dev/xvda to /dev/xvdz

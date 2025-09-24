@@ -17,7 +17,7 @@ builds:
 nfpms:
   - maintainer: BobTheTerrible
     description: Manages an auto-scaling EBS volume array
-    homepage: https://github.com/jhinton/ebs-autoscale
+    homepage: https://github.com/BobTheTerrible/ebs-autoscale
     formats:
       - deb
       - rpm

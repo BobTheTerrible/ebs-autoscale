@@ -1,5 +1,7 @@
 package filesystem
 
+import "fmt"
+
 type FileSystem interface {
 	// CreateFileSystem physically creates the file system on the device
 	CreateFileSystem(device string) error
@@ -11,7 +13,9 @@ type FileSystem interface {
 	Stat() (uint64, uint64, uint64, error)
 }
 
-var backends = map[string]func(mountPoint string) FileSystem{}
+
+var backends = map[string]func(mountPoint string, options map[string]interface{}) (FileSystem, error){}
+
 
 // RegisterBackend allows adding a new filesystem type to the registry
 func RegisterBackend(name string, fsConstructor func(mountPoint string, options map[string]interface{}) (FileSystem, error)) {
@@ -21,7 +25,7 @@ func RegisterBackend(name string, fsConstructor func(mountPoint string, options 
 // GetFileSystem returns the configured filesystem backend
 func GetFileSystem(fsType string, mountPoint string, options map[string]interface{}) (FileSystem, error) {
 	if constructor, exists := backends[fsType]; exists {
-		return constructor(mountPoint, options), nil
+    return constructor(mountPoint, options)
 	}
 	return nil, fmt.Errorf("unsupported filesystem type: %s", fsType)
 }
