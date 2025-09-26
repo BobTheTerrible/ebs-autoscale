@@ -136,7 +136,6 @@ func monitorVolume(ctx context.Context, args []string) *ebs_autoscale.MonitorVol
 		*volume,
 		config.Monitor.Interval,
 		config.Monitor.ThresholdPc,
-		config.Monitor.GrowGb,
 	)
 
 	slog.Info(fmt.Sprintf("monitorVolume: Monitoring volume: %s", config.Volume.MountPoint))
@@ -150,6 +149,7 @@ func monitorVolume(ctx context.Context, args []string) *ebs_autoscale.MonitorVol
 }
 
 func base(ctx context.Context, configPath string) (*ebs_autoscale.Config, *ebs_autoscale.Volume, error) {
+	
 	config, err := ebs_autoscale.NewConfig(configPath)
 	if err != nil {
 		return nil, nil, err
