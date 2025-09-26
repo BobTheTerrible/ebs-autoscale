@@ -79,7 +79,7 @@ func readFile(cfg *Config, path string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer f.Close() //nolint:errcheck
 
 	decoder := yaml.NewDecoder(f)
 	return decoder.Decode(cfg)

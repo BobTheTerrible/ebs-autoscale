@@ -108,7 +108,7 @@ func GetAWSEc2Metadata(ctx context.Context, path string, client imds.Client) (va
 	if err != nil {
 		return "", err
 	}
-	defer output.Content.Close()
+	defer output.Content.Close() //nolint:errcheck
 	bytes, err := io.ReadAll(output.Content)
 	if err != nil {
 		return "", err

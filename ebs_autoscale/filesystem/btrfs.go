@@ -43,7 +43,7 @@ func (fs BtrfsFileSystem) CreateFileSystem(device string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer f.Close() //nolint:errcheck
 
 	fsTabLine := fmt.Sprintf("%s\t%s\tbtrfs\tdefaults\t0\t0\n", device, fs.MountPoint)
 
