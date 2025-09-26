@@ -67,8 +67,10 @@ The following is an example of the configuration json:
 
 ##### Btrfs
 
+```json
 type: btrfs
 fs-specific: {}
+```
 
 ### Initialisation
 
