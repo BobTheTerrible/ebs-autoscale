@@ -67,9 +67,15 @@ The following is an example of the configuration json:
 
 ##### Btrfs
 
+https://en.wikipedia.org/wiki/Btrfs
+
 ```json
-type: btrfs
-fs-specific: {}
+{
+  "backend": { 
+    "type": "btrfs",
+    "fs-specific": {}
+  }
+}
 ```
 
 ### Initialisation
