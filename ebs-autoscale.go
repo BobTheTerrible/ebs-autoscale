@@ -107,7 +107,7 @@ func growVolume(ctx context.Context, args []string) *ebs_autoscale.Volume {
 		log.Fatalln(err)
 	}
 
-	slog.Info(fmt.Sprintf("growVolume: Growing volume"))
+	slog.Info("growVolume: Growing volume")
 
 	err = volume.GrowVolume(ctx)
 	if err != nil {
@@ -149,7 +149,7 @@ func monitorVolume(ctx context.Context, args []string) *ebs_autoscale.MonitorVol
 }
 
 func base(ctx context.Context, configPath string) (*ebs_autoscale.Config, *ebs_autoscale.Volume, error) {
-	
+
 	config, err := ebs_autoscale.NewConfig(configPath)
 	if err != nil {
 		return nil, nil, err
