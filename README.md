@@ -131,8 +131,7 @@ The ec2 instance will require the following permissions to allow ebs-autoscale t
 
 `allowInstanceOperations` is required to read the tags from the local instance.
 It is recommended to limit which instance tags can be read by identifying the instance(s).
-See the `Condition` block for an example.
-Limits the ability to attach volumes with a specific tag. ebs-autoscale will copy tags from the instance to the volumes on creation.
+See the `Condition` block for an example. ebs-autoscale will copy tags from the instance to the volumes on creation.
 
 `enableCloudwatchLoggingPutEvents` allows the utility to push cloudwatch logs to a log group. Replace `<log group arn>` with your log group.
 
