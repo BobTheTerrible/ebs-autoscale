@@ -1,0 +1,13 @@
+[Unit]
+Description=EBS Autoscale Volume Monitor
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ebs-autoscale monitor
+Restart=always
+RestartSec=3
+RestartSteps=10
+RestartMaxDelaySec=60
+
+[Install]
+WantedBy=multi-user.target

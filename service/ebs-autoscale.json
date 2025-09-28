@@ -1,0 +1,19 @@
+{
+  "monitor": {
+    "interval": 5,
+    "threshold-pc": 50
+  },
+  "filesystem": {
+    "path": "/mnt/ebs-autoscale",
+    "ebs-type": "gp3",
+    "ebs-throughput": 150,
+    "initial-size-gb": 50,
+    "max-size-gb": 1000,
+    "ebs-max-attached-volumes": 16,
+    "ebs-max-created-volumes": 8,
+    "backend": {
+      "type": "btrfs",
+      "fs-specific": {}
+    }
+  }
+}

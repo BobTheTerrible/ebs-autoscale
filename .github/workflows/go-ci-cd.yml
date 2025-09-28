@@ -1,0 +1,96 @@
+name: Go CI/CD
+
+on:
+  push:
+    branches:
+      - '**'  # The workflow runs on every push to any branch
+  pull_request:
+  workflow_dispatch:
+  release:
+    types:
+      - created
+
+jobs:
+  extract-go-version:
+    runs-on: ubuntu-latest
+    outputs:
+      go_version: ${{ steps.extract.outputs.go_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract Go version from go.mod
+        id: extract
+        run: |
+          VERSION=$(grep '^go ' go.mod | awk '{print $2}')
+          echo "go_version=${VERSION}" >> $GITHUB_ENV
+          echo "::set-output name=go_version::${VERSION}"
+  lint:
+    runs-on: ubuntu-latest
+    needs: extract-go-version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.extract-go-version.outputs.go_version }}
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+
+      - name: Run golangci-lint
+        run: golangci-lint run ./...
+
+  test:
+    runs-on: ubuntu-latest
+    needs: extract-go-version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.extract-go-version.outputs.go_version }}
+
+      - name: Install go-junit-report
+        run: |
+          go install github.com/jstemmer/go-junit-report@latest
+
+      - name: Run tests and generate JUnit report
+        run: |
+          go test -v ./ebs_autoscale/... | go-junit-report > result.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: result.xml
+
+  release:
+    if: github.event_name == 'release' && github.event.action == 'created'
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.extract-go-version.outputs.go_version }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GORELEASER_TOKEN }}

@@ -1,0 +1,39 @@
+project_name: ebs-autoscale
+
+release:
+  github:
+    owner: BobTheTerrible
+    name: ebs-autoscale
+  mode: append
+
+builds:
+  - env: [CGO_ENABLED=0]
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+nfpms:
+  - maintainer: BobTheTerrible
+    description: Manages an auto-scaling EBS volume array
+    homepage: https://github.com/BobTheTerrible/ebs-autoscale
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/local/bin
+    contents:
+      - src: service/systemd/ebs-autoscale-monitor.service
+        dst: /usr/lib/systemd/system/ebs-autoscale-monitor.service
+      - src: service/ebs-autoscale.json
+        dst: /etc/ebs-autoscale/ebs-autoscale.json
+    overrides:
+      rpm:
+        dependencies:
+          - btrfs-progs
+      deb:
+        dependencies:
+          - btrfs-progs
+    scripts:
+      postinstall: service/systemd/install.sh
+      postremove: service/systemd/uninstall.sh
